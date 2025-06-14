@@ -29,6 +29,7 @@ const Uncontrolled = () => {
                     entityMap: {}
                 })}
                 className="demo-editor"
+                
             />
         </section>
     )
