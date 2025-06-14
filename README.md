@@ -4,6 +4,11 @@ A powerful and flexible rich text editor built with React and draft-js. Develope
 
 [![GitHub](https://img.shields.io/github/license/mohammad-rex-craft/WYSIWYG-Editor)](https://github.com/mohammad-rex-craft/WYSIWYG-Editor/blob/master/LICENSE)
 
+## Author
+
+Developed by Mohammad Al-Halabi
+
+
 ## Features
 
 - Supports both Controlled and Uncontrolled modes
@@ -257,13 +262,9 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Author
 
-Developed by Mohammad Al-Halabi
 
 ## Repository
 
