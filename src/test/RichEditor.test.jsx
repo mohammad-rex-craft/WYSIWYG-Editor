@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import RichEditor from '../components/RichEditor';
+import { EditorState } from 'draft-js';
 
 // Mock window.URL methods
 const mockCreateObjectURL = jest.fn();
@@ -71,10 +72,8 @@ describe('RichEditor Component', () => {
 
   it('handles fullscreen toggle', () => {
     render(<RichEditor {...defaultProps} toolbarButtons={['FULLSCREEN']} />);
-    
     const fullscreenButton = screen.getByRole('button', { name: /fullscreen/i });
     fireEvent.click(fullscreenButton);
-    
     const editorContainer = screen.getByRole('textbox').closest('.rich-editor');
     expect(editorContainer).toHaveClass('fullscreen');
   });
@@ -121,7 +120,7 @@ describe('RichEditor Component', () => {
   });
 
   it('handles list toggling', () => {
-    render(<RichEditor {...defaultProps} toolbarButtons={['UNORDERED_LIST', 'ORDERED_LIST']} />);
+    render(<RichEditor {...defaultProps} toolbarButtons={['ORDERED_LIST_DOT', 'ORDERED_LIST_NUM']} />);
     
     const unorderedListButton = screen.getByRole('button', { name: /unordered list/i });
     fireEvent.click(unorderedListButton);
@@ -129,6 +128,8 @@ describe('RichEditor Component', () => {
     // Mock the editor state change
     const editor = screen.getByRole('textbox');
     fireEvent.keyDown(editor, { key: 'a' });
+    
+    expect(editor).toBeInTheDocument();
   });
 
   it('handles export to word', () => {

@@ -12,6 +12,7 @@ import {
   Editor,
   EditorState,
   convertFromRaw,
+  convertToRaw,
   RichUtils,
 } from 'draft-js';
 import 'draft-js/dist/Draft.css';
@@ -152,7 +153,11 @@ const RichEditor = ({
 
   const handleToggleFullscreen = useCallback(() => {
     setIsFullscreen(prev => !prev);
-  }, []);
+    if (onChange) {
+      onChange(JSON.stringify(convertToRaw(editorState.getCurrentContent())));
+    }
+  }, [editorState, onChange]);
+
   const headingOptions = [
     { value: 'unstyled', label: 'h' },
     { value: 'header-one', label: 'h1' },
@@ -209,7 +214,7 @@ const RichEditor = ({
 
   return (
     <div className={`rich-editor ${className || ''} ${isFullscreen ? 'fullscreen' : ''}`} style={style}>
-      {!isReadOnly ? (customToolbar ? customToolbar : defaultToolbar):''}
+      {!isReadOnly ? (customToolbar ? customToolbar : defaultToolbar) : ''}
       <div className="rich-editor-content">
         <Editor
           editorState={editorState}

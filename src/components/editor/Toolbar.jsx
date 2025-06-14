@@ -105,25 +105,46 @@ const Toolbar = ({
 
         if (['LEFT', 'CENTER', 'RIGHT'].includes(button)) {
           return (
-            <AlignmentButton key={button} config={config} onTextAlignment={onTextAlignment} getCurrentBlockType={getCurrentBlockType} />
+            <AlignmentButton 
+              key={button} 
+              config={config} 
+              onTextAlignment={onTextAlignment} 
+              getCurrentBlockType={getCurrentBlockType} 
+              button={button}
+            />
           );
         }
 
         if (button === 'ORDERED_LIST_DOT') {
           return (
-            <OrderListDotButton key={button} config={config} getCurrentBlockType={getCurrentBlockType} button={button}/>
+            <OrderListDotButton 
+              key={button} 
+              config={config} 
+              getCurrentBlockType={getCurrentBlockType} 
+              button={button}
+            />
           );
         }
 
         if (button === 'ORDERED_LIST_NUM') {
           return (
-            <OrderListNumButton key={button} config={config} getCurrentBlockType={getCurrentBlockType} button={button}/>
+            <OrderListNumButton 
+              key={button} 
+              config={config} 
+              getCurrentBlockType={getCurrentBlockType} 
+              button={button}
+            />
           );
         }
 
         if (button === 'FULLSCREEN') {
           return (
-            <FullScreenButton key={button} config={config} fullscreen={isFullscreen} />
+            <FullScreenButton 
+              key={button} 
+              fullscreen={isFullscreen} 
+              action={onToggleFullscreen} 
+              icon={config.label}
+            />
           );
         }
 

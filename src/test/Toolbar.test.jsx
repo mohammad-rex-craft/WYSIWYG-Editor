@@ -114,7 +114,7 @@ describe('Toolbar Component', () => {
   });
 
   it('handles list toggling', () => {
-    render(<Toolbar {...defaultProps} toolbarButtons={['UNORDERED_LIST', 'ORDERED_LIST']} />);
+    render(<Toolbar {...defaultProps} toolbarButtons={['ORDERED_LIST_DOT', 'ORDERED_LIST_NUM']} />);
     
     const unorderedListButton = screen.getByRole('button', { name: /unordered list/i });
     fireEvent.click(unorderedListButton);
