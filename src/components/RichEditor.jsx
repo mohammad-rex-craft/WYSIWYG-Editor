@@ -54,6 +54,18 @@ import { useLinkHandlers } from './editor/Link';
  * @property {ToolbarButtonConfig} fullscreen - Fullscreen button configuration
  */
 
+/**
+ * @typedef {Object} RichEditorProps
+ * @property {string} value - The editor content value
+ * @property {Function} onChange - The function to handle content changes
+ * @property {string} placeHolder - The placeholder text
+ * @property {string} className - The CSS class name
+ * @property {React.CSSProperties} style - The CSS styles
+ * @property {Function} renderToolbar - The function to render the toolbar
+ * @property {string} initialContent - The initial content value
+ * @property {string[]} toolbarButtons - The toolbar buttons
+*/
+
 const RichEditor = ({
   value,
   onChange,

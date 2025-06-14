@@ -10,6 +10,27 @@ import UnderlineIcon from '../icons/underlineIcon';
 import LinkIcon from '../icons/linkIcon';
 import { FullScreenButton, ImageButton, LinkButton, AlignmentButton, OrderListDotButton, OrderListNumButton, ExportWordButton, PrintButton, HeadingButton } from "../btn";
 
+/**
+ * @typedef {Object} ToolbarProps
+ * @property {EditorState} editorState - The editor state
+ * @property {string[]} toolbarButtons - The toolbar buttons
+ * @property {Function} onToggleInlineStyle - The function to toggle inline style
+ * @property {Function} onTextAlignment - The function to handle text alignment
+ * @property {Function} onExportToWord - The function to export to word
+ * @property {Function} onImageUpload - The function to upload an image
+ * @property {boolean} showLinkInput - Whether to show the link input
+ * @property {Function} setShowLinkInput - The function to set the show link input
+ * @property {string} linkUrl - The link URL
+ * @property {Function} setLinkUrl - The function to set the link URL
+ * @property {Function} addLink - The function to add a link
+ * @property {React.RefObject} fileInputRef - The file input reference
+ * @property {Function} onToggleUnorderedList - The function to toggle an unordered list
+ * @property {Function} onToggleOrderedList - The function to toggle an ordered list
+ * @property {Function} onHeadingChange - The function to change the heading
+ * @property {Function} onToggleFullscreen - The function to toggle fullscreen
+ * @property {boolean} isFullscreen - Whether the editor is fullscreen
+ * @property {Function} onPrint - The function to print the editor
+ */
 const Toolbar = ({
   editorState,
   toolbarButtons,
