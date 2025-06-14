@@ -1,4 +1,12 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { FullScreenIcon, ExitFullScreenIcon } from './icons/screeenIcons';
+import { ListNumIcon, ListDoteIcon } from './icons/listIcons';
+import ImageIcons from './icons/imageIcons';
+import ExportIcon from './icons/exportIcon';
+import { LeftIcon, CenterIcon, RightIcon } from './icons/alignmentIcons';
+import UnderlineIcon from './icons/underlineIcon';
+import LinkIcon from './icons/linkIcon';
+import {PrintIcon} from './icons/printIcon';
 import PropTypes from 'prop-types';
 import {
   Editor,
@@ -15,6 +23,36 @@ import {toggleInlineStyle, exportToWord, toggleUnorderedList, toggleOrderedList,
 import { useImageHandlers } from './editor/Image';
 import { useLinkHandlers } from './editor/Link';
 
+/**
+ * @typedef {Object} HeadingOption
+ * @property {string} value - The heading type value
+ * @property {string} label - The heading label
+ */
+
+/**
+ * @typedef {Object} ToolbarButtonConfig
+ * @property {Function} action - The action function to be called
+ * @property {React.ReactNode} label - The button label/icon
+ * @property {boolean} [showInput] - Whether to show input field
+ * @property {Function} [setShowInput] - Function to toggle input visibility
+ * @property {string} [url] - URL for link button
+ * @property {Function} [setUrl] - Function to set URL
+ * @property {HeadingOption[]} [headingOptions] - Options for heading dropdown
+ * @property {boolean} [isActive] - Whether the button is active
+ */
+
+/**
+ * @typedef {Object} ToolbarConfig
+ * @property {ToolbarButtonConfig} print - Print button configuration
+ * @property {ToolbarButtonConfig} export - Export button configuration
+ * @property {ToolbarButtonConfig} image - Image button configuration
+ * @property {ToolbarButtonConfig} link - Link button configuration
+ * @property {ToolbarButtonConfig} heading - Heading button configuration
+ * @property {ToolbarButtonConfig} orderedListDot - Unordered list button configuration
+ * @property {ToolbarButtonConfig} orderedListNum - Ordered list button configuration
+ * @property {ToolbarButtonConfig} fullscreen - Fullscreen button configuration
+ */
+
 const RichEditor = ({
   value,
   onChange,
@@ -25,6 +63,7 @@ const RichEditor = ({
   initialContent,
   toolbarButtons = ['HEADING', 'BOLD', 'ITALIC', 'UNDERLINE', 'LINK', 'LEFT', 'CENTER', 'RIGHT', 'EXPORT_WORD', 'IMAGE', 'UNORDERED_LIST', 'ORDERED_LIST', 'FULLSCREEN', 'PRINT'],
 }) => {
+
   const [placeHolderTape, setPlaceHolderTape] = useState(placeHolder);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [editorState, setEditorState] = useState(() => {
@@ -75,16 +114,12 @@ const RichEditor = ({
     setAlignment(style);
   }, [isReadOnly]);
 
-  const handleExportToWord = useCallback(() => {
-    exportToWord(editorState);
-  }, [editorState]);
-
-  const handleToggleFullscreen = useCallback(() => {
-    setIsFullscreen(prev => !prev);
-  }, []);
-
   const handlePrint = useCallback(() => {
     printContent(editorState);
+  }, [editorState]);
+
+  const handleExport = useCallback(() => {
+    exportToWord(editorState);
   }, [editorState]);
 
   const { handleInsertImage, handleImageUpload } = useImageHandlers(editorState, setEditorState);
@@ -115,13 +150,45 @@ const RichEditor = ({
     setEditorState(newState);
   }, [editorState, setEditorState, isReadOnly]);
 
+  const handleToggleFullscreen = useCallback(() => {
+    setIsFullscreen(prev => !prev);
+  }, []);
+  const headingOptions = [
+    { value: 'unstyled', label: 'h' },
+    { value: 'header-one', label: 'h1' },
+    { value: 'header-two', label: 'h2' },
+    { value: 'header-three', label: 'h3' },
+    { value: 'header-four', label: 'h4' },
+    { value: 'header-five', label: 'h5' },
+    { value: 'header-six', label: 'h6' }
+  ];
+
+  /** @type {ToolbarConfig} */
+  const toolbarConfig = {
+    print: { action: handlePrint, label: <PrintIcon /> },
+    export: { action: handleExport, label: <ExportIcon /> },
+    image: { action: handleImageUpload, label: <ImageIcons /> },
+    link: { 
+      action: handleAddLink, 
+      label: <LinkIcon />,
+      showInput: showLinkInput,
+      setShowInput: setShowLinkInput,
+      url: linkUrl,
+      setUrl: setLinkUrl
+    },
+    heading: { action: handleHeadingChange, label: 'Heading' ,headingOptions:headingOptions},
+    orderedListDot: { action: handleToggleUnorderedList, label: <ListDoteIcon /> },
+    orderedListNum: { action: handleToggleOrderedList, label: <ListNumIcon /> },
+    fullscreen: { action: handleToggleFullscreen, label: isFullscreen ? <ExitFullScreenIcon /> : <FullScreenIcon />, isActive: isFullscreen }
+  };
+
   const defaultToolbar = (
     <Toolbar
       editorState={editorState}
       toolbarButtons={toolbarButtons}
       onToggleInlineStyle={handleToggleInlineStyle}
       onTextAlignment={handleTextAlignment}
-      onExportToWord={handleExportToWord}
+      onExportToWord={handleExport}
       onImageUpload={handleImageUpload}
       showLinkInput={showLinkInput}
       setShowLinkInput={setShowLinkInput}
@@ -138,13 +205,11 @@ const RichEditor = ({
     />
   );
 
-  const customToolbar = renderToolbar ? renderToolbar(editorState, setEditorState) : null;
+  const customToolbar = renderToolbar ? renderToolbar(editorState, setEditorState, toolbarConfig) : null;
 
   return (
     <div className={`rich-editor ${className || ''} ${isFullscreen ? 'fullscreen' : ''}`} style={style}>
-      {!isReadOnly && customToolbar}
-      {!isReadOnly && defaultToolbar}
-
+      {!isReadOnly ? (customToolbar ? customToolbar : defaultToolbar):''}
       <div className="rich-editor-content">
         <Editor
           editorState={editorState}
