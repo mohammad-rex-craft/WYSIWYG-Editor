@@ -1,0 +1,174 @@
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
+import {
+  Editor,
+  EditorState,
+  convertFromRaw,
+  RichUtils,
+} from 'draft-js';
+import 'draft-js/dist/Draft.css';
+import './RichEditor.css';
+
+import decorator from './editor/decorators';
+import Toolbar from './editor/Toolbar';
+import {toggleInlineStyle, exportToWord, toggleUnorderedList, toggleOrderedList, printContent} from './editor/utils';
+import { useImageHandlers } from './editor/Image';
+import { useLinkHandlers } from './editor/Link';
+
+const RichEditor = ({
+  value,
+  onChange,
+  placeHolder,
+  className,
+  style,
+  renderToolbar,
+  initialContent,
+  toolbarButtons = ['HEADING', 'BOLD', 'ITALIC', 'UNDERLINE', 'LINK', 'LEFT', 'CENTER', 'RIGHT', 'EXPORT_WORD', 'IMAGE', 'UNORDERED_LIST', 'ORDERED_LIST', 'FULLSCREEN', 'PRINT'],
+}) => {
+  const [placeHolderTape, setPlaceHolderTape] = useState(placeHolder);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [editorState, setEditorState] = useState(() => {
+    if (value) {
+      try {
+        const contentState = convertFromRaw(JSON.parse(value));
+        return EditorState.createWithContent(contentState, decorator);
+      } catch (e) {
+        return EditorState.createEmpty(decorator);
+      }
+    }
+    if (initialContent) {
+      try {
+        const contentState = convertFromRaw(JSON.parse(initialContent));
+        return EditorState.createWithContent(contentState, decorator);
+      } catch (e) {
+        return EditorState.createEmpty(decorator);
+      }
+    }
+    return EditorState.createEmpty(decorator);
+  });
+
+  const isReadOnly = value && !onChange;
+
+  useEffect(() => {
+    if (value) {
+      try {
+        const contentState = convertFromRaw(JSON.parse(value));
+        const newEditorState = EditorState.createWithContent(contentState, decorator);
+        setEditorState(newEditorState);
+      } catch (e) {
+        console.error('Invalid editor value format');
+      }
+    }
+  }, [value]);
+
+  const fileInputRef = useRef(null);
+  const [alignment, setAlignment] = useState('');
+
+  const handleToggleInlineStyle = useCallback((style) => {
+    if (isReadOnly) return;
+    const newState = toggleInlineStyle(editorState, style);
+    setEditorState(newState);
+  }, [editorState, setEditorState, isReadOnly]);
+
+  const handleTextAlignment = useCallback((style) => {
+    if (isReadOnly) return;
+    setAlignment(style);
+  }, [isReadOnly]);
+
+  const handleExportToWord = useCallback(() => {
+    exportToWord(editorState);
+  }, [editorState]);
+
+  const handleToggleFullscreen = useCallback(() => {
+    setIsFullscreen(prev => !prev);
+  }, []);
+
+  const handlePrint = useCallback(() => {
+    printContent(editorState);
+  }, [editorState]);
+
+  const { handleInsertImage, handleImageUpload } = useImageHandlers(editorState, setEditorState);
+  const {
+    showLinkInput,
+    setShowLinkInput,
+    linkUrl,
+    setLinkUrl,
+    handleAddLink,
+    handleRemoveLink
+  } = useLinkHandlers(editorState, setEditorState);
+
+  const handleToggleUnorderedList = useCallback(() => {
+    if (isReadOnly) return;
+    const newState = toggleUnorderedList(editorState);
+    setEditorState(newState);
+  }, [editorState, setEditorState, isReadOnly]);
+
+  const handleToggleOrderedList = useCallback(() => {
+    if (isReadOnly) return;
+    const newState = toggleOrderedList(editorState);
+    setEditorState(newState);
+  }, [editorState, setEditorState, isReadOnly]);
+
+  const handleHeadingChange = useCallback((headingType) => {
+    if (isReadOnly) return;
+    const newState = RichUtils.toggleBlockType(editorState, headingType);
+    setEditorState(newState);
+  }, [editorState, setEditorState, isReadOnly]);
+
+  const defaultToolbar = (
+    <Toolbar
+      editorState={editorState}
+      toolbarButtons={toolbarButtons}
+      onToggleInlineStyle={handleToggleInlineStyle}
+      onTextAlignment={handleTextAlignment}
+      onExportToWord={handleExportToWord}
+      onImageUpload={handleImageUpload}
+      showLinkInput={showLinkInput}
+      setShowLinkInput={setShowLinkInput}
+      linkUrl={linkUrl}
+      setLinkUrl={setLinkUrl}
+      addLink={handleAddLink}
+      fileInputRef={fileInputRef}
+      onToggleUnorderedList={handleToggleUnorderedList}
+      onToggleOrderedList={handleToggleOrderedList}
+      onHeadingChange={handleHeadingChange}
+      onToggleFullscreen={handleToggleFullscreen}
+      isFullscreen={isFullscreen}
+      onPrint={handlePrint}
+    />
+  );
+
+  const customToolbar = renderToolbar ? renderToolbar(editorState, setEditorState) : null;
+
+  return (
+    <div className={`rich-editor ${className || ''} ${isFullscreen ? 'fullscreen' : ''}`} style={style}>
+      {!isReadOnly && customToolbar}
+      {!isReadOnly && defaultToolbar}
+
+      <div className="rich-editor-content">
+        <Editor
+          editorState={editorState}
+          onChange={setEditorState}
+          placeholder={placeHolderTape}
+          textAlignment={alignment}
+          onFocus={() => setPlaceHolderTape('')}
+          onBlur={() => setPlaceHolderTape(placeHolder)}
+          readOnly={isReadOnly}
+          blockProps={{ editorState, setEditorState }}
+        />
+      </div>
+    </div>
+  );
+};
+
+RichEditor.propTypes = {
+  value: PropTypes.string,
+  onChange: PropTypes.func,
+  className: PropTypes.string,
+  style: PropTypes.object,
+  renderToolbar: PropTypes.func,
+  initialContent: PropTypes.string,
+  toolbarButtons: PropTypes.arrayOf(PropTypes.string),
+};
+
+export default RichEditor; 
