@@ -3,6 +3,7 @@
 A powerful and flexible rich text editor built with React and draft-js. Developed by Mohammad Al-Halabi.
 
 [![GitHub](https://img.shields.io/github/license/mohammad-rex-craft/WYSIWYG-Editor)](https://github.com/mohammad-rex-craft/WYSIWYG-Editor/blob/master/LICENSE)
+[![Site](https://wysiwyg-editor-chi.vercel.app/)](https://wysiwyg-editor-chi.vercel.app/)
 
 ## Author
 
